@@ -172,7 +172,7 @@ class ComparisonApp:
             metrics_to_display = []
             for name, var in self.metrics_vars.items():
                 if var.get():
-                    metrics_to_display.append(f"{name}={metrics[name]:.3f}")
+                    metrics_to_display.append(f"{name}={metrics[name]:.10f}")
             if metrics_to_display:
                 legend_label += f" ({', '.join(metrics_to_display)})"
 
