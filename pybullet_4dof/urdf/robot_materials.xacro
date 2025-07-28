@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  
+  <!-- Material Definitions -->
+  <!-- Modern metallic silver for base and primary structure -->
+  <material name="metallic_silver">
+    <color rgba="0.8 0.8 0.85 1.0"/>
+  </material>
+
+  <!-- Deep orange accent for dynamic parts -->
+  <material name="deep_orange">
+    <color rgba="0.95 0.45 0.15 1.0"/>
+  </material>
+
+  <!-- Sleek dark gray for secondary parts -->
+  <material name="sleek_gray">
+    <color rgba="0.25 0.25 0.25 1.0"/>
+  </material>
+
+  <!-- Electric blue for joints and end-effector -->
+  <material name="electric_blue">
+    <color rgba="0.2 0.5 1.0 1.0"/>
+  </material>
+
+  <!-- Metallic white for highlights -->
+  <material name="metallic_white">
+    <color rgba="0.95 0.95 0.95 1.0"/>
+  </material>
+
+</robot>
