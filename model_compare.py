@@ -346,7 +346,7 @@ class ComparisonApp:
             
         try:
             for i, chart in enumerate(self.charts):
-                joint_name = chart.title.text.split(" for ")[-1].replace(" ", "_")
+                joint_name = chart.title['text'].split(" for ")[-1].replace(" ", "_")
                 filename = os.path.join(save_dir, f"comparison_{joint_name}.png")
                 
                 # Use vl-convert to save the chart as a PNG
