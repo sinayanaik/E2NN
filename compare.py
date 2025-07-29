@@ -14,11 +14,21 @@ except ImportError:
 
 def calculate_metrics(y_true, y_pred):
     metrics = {}
-    metrics['MSE'] = mean_squared_error(y_true, y_pred)
-    metrics['NMSE'] = np.sum((y_true - y_pred)**2) / np.sum((y_true - y_true.mean())**2)
-    metrics['R²'] = r2_score(y_true, y_pred)
-    metrics['MAE'] = mean_absolute_error(y_true, y_pred)
-    metrics['MaxAE'] = np.max(np.abs(y_true - y_pred))
+    # Use multioutput='raw_values' to get per-joint scores
+    metrics['MSE'] = mean_squared_error(y_true, y_pred, multioutput='raw_values')
+    
+    # Calculate NMSE per joint
+    y_true_mean = y_true.mean(axis=0, keepdims=True)
+    numerator = np.sum((y_true - y_pred)**2, axis=0)
+    denominator = np.sum((y_true - y_true_mean)**2, axis=0)
+    # Avoid division by zero if a ground truth signal is constant
+    metrics['NMSE'] = np.divide(numerator, denominator, out=np.zeros_like(numerator), where=denominator!=0)
+
+    metrics['R²'] = r2_score(y_true, y_pred, multioutput='raw_values')
+    metrics['MAE'] = mean_absolute_error(y_true, y_pred, multioutput='raw_values')
+    
+    # Calculate MaxAE per joint
+    metrics['MaxAE'] = np.max(np.abs(y_true - y_pred), axis=0)
     return metrics
 
 def find_ground_truth_file():
@@ -166,18 +176,24 @@ class ComparisonApp:
             
             y_true_for_metrics = gt_torques.loc[df.index].values
 
-            metrics = calculate_metrics(y_true_for_metrics, y_pred.values)
+            # metrics_per_joint will be a dict of arrays, e.g., {'MSE': [mse1, mse2, mse3], ...}
+            metrics_per_joint = calculate_metrics(y_true_for_metrics, y_pred.values)
             
-            legend_label = p_data['legend']
-            metrics_to_display = []
-            for name, var in self.metrics_vars.items():
-                if var.get():
-                    metrics_to_display.append(f"{name}={metrics[name]:.10f}")
-            if metrics_to_display:
-                legend_label += f" ({', '.join(metrics_to_display)})"
-
             color = colors[i % len(colors)]
+            
+            # Loop over each joint to create a specific legend and plot
             for j in range(3):
+                legend_label = p_data['legend']
+                metrics_to_display = []
+                for name, var in self.metrics_vars.items():
+                    if var.get():
+                        # Get the metric for the current joint 'j'
+                        metric_value = metrics_per_joint[name][j]
+                        metrics_to_display.append(f"{name}={metric_value:.10f}")
+                
+                if metrics_to_display:
+                    legend_label += f" ({', '.join(metrics_to_display)})"
+
                 axes[j].plot(df.index, y_pred.iloc[:, j], label=legend_label, color=color, linewidth=1.5)
 
         for i, title in enumerate(['Joint 1 Torque', 'Joint 2 Torque', 'Joint 3 Torque']):

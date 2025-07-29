@@ -240,9 +240,20 @@ def train_model(hyperparameters, data_path, stroke_option, test_split_ratio):
     r2 = r2_score(y_test_numpy, test_predictions)
 
     with open(os.path.join(output_dir, 'performance_metrics.txt'), 'w') as f:
-        f.write(f"Mean Squared Error (MSE): {mse}\n")
-        f.write(f"Mean Absolute Error (MAE): {mae}\n")
-        f.write(f"R-squared (R2): {r2}\n")
+        f.write("Hyperparameters:\n")
+        for key, value in hyperparameters.items():
+            if hasattr(value, '__name__'):
+                f.write(f"  {key}: {value.__name__}\n")
+            else:
+                f.write(f"  {key}: {value}\n")
+        f.write(f"  data_path: {os.path.basename(data_path)}\n")
+        f.write(f"  stroke_option: {stroke_option}\n")
+        f.write(f"  test_split_ratio: {test_split_ratio}\n")
+        f.write("\n")
+        f.write("Performance Metrics:\n")
+        f.write(f"  Mean Squared Error (MSE): {mse}\n")
+        f.write(f"  Mean Absolute Error (MAE): {mae}\n")
+        f.write(f"  R-squared (R2): {r2}\n")
 
     # Save predictions for both train and test sets
     y_train_numpy = y_train_tensor.numpy()
