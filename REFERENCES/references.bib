@@ -1,0 +1,135 @@
+@techReport{,
+   author = {Ben Moseley},
+   title = {Physics-informed machine learning: from concepts to real-world applications EPSRC Centre for Doctoral Training in Autonomous Intelligent Machines \& Systems MS}
+}
+@article{Roy2024,
+   abstract = {The use of deep learning methods in scientific computing represents a potential paradigm shift in engineering problem solving. One of the most prominent developments is Physics-Informed Neural Networks (PINNs), in which neural networks are trained to satisfy partial differential equations (PDEs). While this method shows promise, the standard version has been shown to struggle in accurately predicting the dynamic behavior of time-dependent problems. To address this challenge, methods have been proposed that decompose the time domain into multiple segments, employing a distinct neural network in each segment and directly incorporating continuity between them in the loss function of the minimization problem. In this work we introduce a method to exactly enforce continuity between successive time segments via a solution ansatz. This hard constrained sequential PINN (HCS-PINN) method is simple to implement and eliminates the need for any loss terms associated with temporal continuity. The method is tested for a number of benchmark problems involving both linear and non-linear PDEs. Examples include various first order time dependent problems in which traditional PINNs struggle, namely advection, Allen-Cahn, and Korteweg-de Vries equations. Furthermore, second and third order time-dependent problems are demonstrated via wave and Jerky dynamics examples, respectively. Notably, the Jerky dynamics problem is chaotic, making the problem especially sensitive to temporal accuracy. The numerical experiments conducted with the proposed method demonstrated superior convergence and accuracy over both traditional PINNs and the soft-constrained counterparts.},
+   author = {Pratanu Roy and Stephen Castonguay},
+   month = {3},
+   title = {Exact Enforcement of Temporal Continuity in Sequential Physics-Informed Neural Networks},
+   url = {http://arxiv.org/abs/2403.03223},
+   year = {2024}
+}
+@article{Lu2021,
+   abstract = {Inverse design arises in a variety of areas in engineering such as acoustic, mechanics, thermal/electronic transport, electromagnetism, and optics. Topology optimization is a major form of inverse design, where we optimize a designed geometry to achieve targeted properties and the geometry is parameterized by a density function. This optimization is challenging, because it has a very high dimensionality and is usually constrained by partial differential equations (PDEs) and additional inequalities. Here, we propose a new deep learning method -- physics-informed neural networks with hard constraints (hPINNs) -- for solving topology optimization. hPINN leverages the recent development of PINNs for solving PDEs, and thus does not rely on any numerical PDE solver. However, all the constraints in PINNs are soft constraints, and hence we impose hard constraints by using the penalty method and the augmented Lagrangian method. We demonstrate the effectiveness of hPINN for a holography problem in optics and a fluid problem of Stokes flow. We achieve the same objective as conventional PDE-constrained optimization methods based on adjoint methods and numerical PDE solvers, but find that the design obtained from hPINN is often simpler and smoother for problems whose solution is not unique. Moreover, the implementation of inverse design with hPINN can be easier than that of conventional methods.},
+   author = {Lu Lu and Raphael Pestourie and Wenjie Yao and Zhicheng Wang and Francesc Verdugo and Steven G. Johnson},
+   month = {2},
+   title = {Physics-informed neural networks with hard constraints for inverse design},
+   url = {http://arxiv.org/abs/2102.04626},
+   year = {2021}
+}
+@article{Roy2024,
+   abstract = {The use of deep learning methods in scientific computing represents a potential paradigm shift in engineering problem solving. One of the most prominent developments is Physics-Informed Neural Networks (PINNs), in which neural networks are trained to satisfy partial differential equations (PDEs). While this method shows promise, the standard version has been shown to struggle in accurately predicting the dynamic behavior of time-dependent problems. To address this challenge, methods have been proposed that decompose the time domain into multiple segments, employing a distinct neural network in each segment and directly incorporating continuity between them in the loss function of the minimization problem. In this work we introduce a method to exactly enforce continuity between successive time segments via a solution ansatz. This hard constrained sequential PINN (HCS-PINN) method is simple to implement and eliminates the need for any loss terms associated with temporal continuity. The method is tested for a number of benchmark problems involving both linear and non-linear PDEs. Examples include various first order time dependent problems in which traditional PINNs struggle, namely advection, Allen-Cahn, and Korteweg-de Vries equations. Furthermore, second and third order time-dependent problems are demonstrated via wave and Jerky dynamics examples, respectively. Notably, the Jerky dynamics problem is chaotic, making the problem especially sensitive to temporal accuracy. The numerical experiments conducted with the proposed method demonstrated superior convergence and accuracy over both traditional PINNs and the soft-constrained counterparts.},
+   author = {Pratanu Roy and Stephen Castonguay},
+   month = {3},
+   title = {Exact Enforcement of Temporal Continuity in Sequential Physics-Informed Neural Networks},
+   url = {http://arxiv.org/abs/2403.03223},
+   year = {2024}
+}
+@article{Liu2024,
+   abstract = {This work concerns the application of physics-informed neural networks to the modeling and control of complex robotic systems. Achieving this goal requires extending physics-informed neural networks to handle nonconservative effects. These learned models are proposed to combine with model-based controllers originally developed with first-principle models in mind. By combining standard and new techniques, precise control performance can be achieved while proving theoretical stability bounds. These validations include real-world experiments of motion prediction with a soft robot and trajectory tracking with a Franka Emika Panda manipulator.},
+   author = {Jingyue Liu and Pablo Borja and Cosimo Della Santina},
+   doi = {10.1002/aisy.202300385},
+   issn = {26404567},
+   issue = {5},
+   journal = {Advanced Intelligent Systems},
+   keywords = {Euler–Lagrange equations,Hamiltonian neural networks,Lagrangian neural networks,dissipation,model-based control,physics-informed neural networks,port-Hamiltonian systems},
+   month = {5},
+   publisher = {John Wiley and Sons Inc},
+   title = {Physics-Informed Neural Networks to Model and Control Robots: A Theoretical and Experimental Investigation},
+   volume = {6},
+   year = {2024}
+}
+@article{Wang2023,
+   abstract = {Physics-informed neural networks (PINNs) have been popularized as a deep learning framework that can seamlessly synthesize observational data and partial differential equation (PDE) constraints. Their practical effectiveness however can be hampered by training pathologies, but also oftentimes by poor choices made by users who lack deep learning expertise. In this paper we present a series of best practices that can significantly improve the training efficiency and overall accuracy of PINNs. We also put forth a series of challenging benchmark problems that highlight some of the most prominent difficulties in training PINNs, and present comprehensive and fully reproducible ablation studies that demonstrate how different architecture choices and training strategies affect the test accuracy of the resulting models. We show that the methods and guiding principles put forth in this study lead to state-of-the-art results and provide strong baselines that future studies should use for comparison purposes. To this end, we also release a highly optimized library in JAX that can be used to reproduce all results reported in this paper, enable future research studies, as well as facilitate easy adaptation to new use-case scenarios.},
+   author = {Sifan Wang and Shyam Sankaran and Hanwen Wang and Paris Perdikaris},
+   month = {8},
+   title = {An Expert's Guide to Training Physics-informed Neural Networks},
+   url = {http://arxiv.org/abs/2308.08468},
+   year = {2023}
+}
+@article{Yang2023,
+   abstract = {Collaborative robots have promising potential for widespread use in small-and-medium-sized enterprise (SME) manufacturing and production due to the development of increasingly sophisticated Human-Robot Collaboration technologies. However, predicting and identifying the behavior of collaborative robots remains a challenging problem due to the significant non-linear properties of their unique gearbox, the harmonic drive. To tackle the engineering problem, this work proposes a physics-informed neural network (PINN) to predict and identify collaborative robot joint dynamics. The procedure involves deriving the state-space dynamic model, embedding the system's dynamics into a recurrent neural network (RNN) with customized Runge-Kutta cells, obtaining labeled training data, predicting system responses, and estimating dynamic parameters. The proposed method is applied to predict and identify collaborative robot joint dynamics, and the results are verified and validated through numerical simulations and experimental testing, respectively. The obtained results demonstrate a high level of agreement with the ground truth and exhibit superior performance compared to the conventional PINN and the non-linear grey-box state-space estimation algorithm when confronted with non-linearity and dynamic coupling. Moreover, the PINN exhibits the potential for extension to various dynamic systems.},
+   author = {Xingyu Yang and Yixiong Du and Leihui Li and Zhengxue Zhou and Xuping Zhang},
+   doi = {10.1109/LRA.2023.3329620},
+   issn = {23773766},
+   issue = {12},
+   journal = {IEEE Robotics and Automation Letters},
+   keywords = {Actuation and Joint Mechanisms,Calibration and Identification,Deep Learning Methods,Dynamics,Human-Robot Collaboration},
+   month = {12},
+   pages = {8462-8469},
+   publisher = {Institute of Electrical and Electronics Engineers Inc.},
+   title = {Physics-Informed Neural Network for Model Prediction and Dynamics Parameter Identification of Collaborative Robot Joints},
+   volume = {8},
+   year = {2023}
+}
+@article{Deng2024,
+   abstract = {In the field of robotic modelling, the challenge of parameter estimation using limited joint monitoring data presents a substantial hurdle for both traditional physics-based methods (PBMs) and machine learning (ML) techniques. PBMs grapple with modelling uncertainties, variable working conditions, diverse robotic configurations, and incomplete parameter information. ML methods face hurdles in maintaining physical consistency, interpretability, and the need for extensive training data. In response to these challenges, this paper proposes a novel approach, the Equation Embedded Neural Network (E2NN), enhanced by an innovative Liquid mechanism, which effectively blends the strengths of PBMs and ML to surmount their inherent limitations. Its primary contributions encompass: (1) a pioneering review and synthesis of hybrid frameworks integrating physical principles with ML, (2) the development and rigorous validation of the E2NN framework, and (3) the introduction of a novel physics regulator and dynamic Liquid mechanism. Particularly, the proposed E2NN leverages inverse dynamics equations to construct specialized neural network layers, featuring activation functions and interconnections expressed as composition operators, thus explicitly encoding physical knowledge. This architectural choice proves especially well-suited for tasks involving inverse dynamics and dynamic planning of robotic manipulators. The accompanying Liquid mechanism allows for dynamic adaptation of interlayer connections in response to input data, enabling real-time adjustments to changing inputs and equations of motion, ultimately enhancing flexibility and performance. Quantitative assessments of E2NN reveal its compelling performance, yielding a Mean Absolute Error (MAE) of 0.10716, closely aligned with the Benchmark Deep Residual Shrinkage Network's (DRSN) MAE of 0.10415, showcasing its competitive efficacy while achieving higher computational efficiency and a more compact model size. Robustness evaluations further confirm E2NN's adaptability, as it attains a Mean Squared Error (MSE) of 0.3, outperforming DRSN's 1.1 under varying working conditions. E2NN excels in torque trajectory fitting, achieving an impressive accuracy rate of 97.1%, underscoring its practical effectiveness. Furthermore, E2NN excels in torque prediction and parameter identification for inverse dynamics models, particularly when confronted with limited joint data and variable friction conditions. It substantially improving the discernment of robot dynamics and enhancing its applicability in real-world trajectory fitting.},
+   author = {Weikun Deng and Fabio Ardiani and Khanh T.P. Nguyen and Mourad Benoussaad and Kamal Medjaher},
+   doi = {10.1016/j.asoc.2024.111877},
+   issn = {15684946},
+   journal = {Applied Soft Computing},
+   keywords = {Equation embedded neural network,Liquid mechanism,Parameter identification,Physics-informed machine learning,Robotic manipulators},
+   month = {9},
+   publisher = {Elsevier Ltd},
+   title = {Physics informed machine learning model for inverse dynamics in robotic manipulators},
+   volume = {163},
+   year = {2024}
+}
+@article{Cranmer2020,
+   abstract = {Accurate models of the world are built upon notions of its underlying symmetries. In physics, these symmetries correspond to conservation laws, such as for energy and momentum. Yet even though neural network models see increasing use in the physical sciences, they struggle to learn these symmetries. In this paper, we propose Lagrangian Neural Networks (LNNs), which can parameterize arbitrary Lagrangians using neural networks. In contrast to models that learn Hamiltonians, LNNs do not require canonical coordinates, and thus perform well in situations where canonical momenta are unknown or difficult to compute. Unlike previous approaches, our method does not restrict the functional form of learned energies and will produce energy-conserving models for a variety of tasks. We test our approach on a double pendulum and a relativistic particle, demonstrating energy conservation where a baseline approach incurs dissipation and modeling relativity without canonical coordinates where a Hamiltonian approach fails. Finally, we show how this model can be applied to graphs and continuous systems using a Lagrangian Graph Network, and demonstrate it on the 1D wave equation.},
+   author = {Miles Cranmer and Sam Greydanus and Stephan Hoyer and Peter Battaglia and David Spergel and Shirley Ho},
+   month = {7},
+   title = {Lagrangian Neural Networks},
+   url = {http://arxiv.org/abs/2003.04630},
+   year = {2020}
+}
+@article{Li2025,
+   abstract = {Deep learning is widely used in robotics, yet often overlooks key physical principles in dynamic modeling, leading to a lack of interpretability and generalization. To address this issue, recent innovations have introduced physics-informed neural networks (PINNs), which integrate fundamental physics into deep learning and offer significant advantages in modeling rigid-body dynamics. This study focuses on the application of PINNs to model compliant robotic manipulators. This requires extending PINNs to handle complex compliant dynamics. We propose an augmented PINN model capable of comprehensively learning manipulator dynamics, including compliant components. The model is tested on dynamic modeling of two physical compliant manipulators and a simulated manipulator. The results highlight its exceptional precision and generalization across a wide range of robotic systems, from purely rigid to compliant structures.},
+   author = {Zhiming Li and Shuangshuang Wu and Wenbai Chen and Fuchun Sun},
+   doi = {10.1016/j.jocs.2025.102633},
+   issn = {18777503},
+   journal = {Journal of Computational Science},
+   keywords = {Compliant robot,Inverse dynamic modeling,Physics-informed neural networks,Rigid-body dynamics},
+   month = {8},
+   publisher = {Elsevier B.V.},
+   title = {Physics-informed neural networks for compliant robotic manipulators dynamic modeling},
+   volume = {90},
+   year = {2025}
+}
+@misc{Farea2024,
+   abstract = {Physics-informed neural networks (PINNs) represent a significant advancement at the intersection of machine learning and physical sciences, offering a powerful framework for solving complex problems governed by physical laws. This survey provides a comprehensive review of the current state of research on PINNs, highlighting their unique methodologies, applications, challenges, and future directions. We begin by introducing the fundamental concepts underlying neural networks and the motivation for integrating physics-based constraints. We then explore various PINN architectures and techniques for incorporating physical laws into neural network training, including approaches to solving partial differential equations (PDEs) and ordinary differential equations (ODEs). Additionally, we discuss the primary challenges faced in developing and applying PINNs, such as computational complexity, data scarcity, and the integration of complex physical laws. Finally, we identify promising future research directions. Overall, this survey seeks to provide a foundational understanding of PINNs within this rapidly evolving field.},
+   author = {Amer Farea and Olli Yli-Harja and Frank Emmert-Streib},
+   doi = {10.3390/ai5030074},
+   issn = {26732688},
+   issue = {3},
+   journal = {AI (Switzerland)},
+   keywords = {data-driven modeling,inverse problems,neural network architectures,ordinary differential equations,partial differential equations,physics-informed neural networks},
+   month = {9},
+   pages = {1534-1557},
+   publisher = {Multidisciplinary Digital Publishing Institute (MDPI)},
+   title = {Understanding Physics-Informed Neural Networks: Techniques, Applications, Trends, and Challenges},
+   volume = {5},
+   year = {2024}
+}
+@article{Nicodemus2021,
+   abstract = {We discuss nonlinear model predictive control (NMPC) for multi-body dynamics via physics-informed machine learning methods. Physics-informed neural networks (PINNs) are a promising tool to approximate (partial) differential equations. PINNs are not suited for control tasks in their original form since they are not designed to handle variable control actions or variable initial values. We thus present the idea of enhancing PINNs by adding control actions and initial conditions as additional network inputs. The high-dimensional input space is subsequently reduced via a sampling strategy and a zero-hold assumption. This strategy enables the controller design based on a PINN as an approximation of the underlying system dynamics. The additional benefit is that the sensitivities are easily computed via automatic differentiation, thus leading to efficient gradient-based algorithms. Finally, we present our results using our PINN-based MPC to solve a tracking problem for a complex mechanical system, a multi-link manipulator.},
+   author = {Jonas Nicodemus and Jonas Kneifl and Jörg Fehr and Benjamin Unger},
+   month = {9},
+   title = {Physics-informed Neural Networks-based Model Predictive Control for Multi-link Manipulators},
+   url = {http://arxiv.org/abs/2109.10793},
+   year = {2021}
+}
+@article{Giacomuzzo2024,
+   abstract = {Learning the inverse dynamics of robots directly from data, adopting a black-box approach, is interesting for several real-world scenarios where limited knowledge about the system is available. In this article, we propose a black-box model based on Gaussian process (GP) regression for the identification of the inverse dynamics of robotic manipulators. The proposed model relies on a novel multidimensional kernel, called Lagrangian Inspired Polynomial (LIP) kernel. The LIP kernel is based on two main ideas. First, instead of directly modeling the inverse dynamics components, we model as GPs the kinetic and potential energy of the system. The GP prior on the inverse dynamics components is derived from those on the energies by applying the properties of GPs under linear operators. Second, as regards the energy prior definition, we prove a polynomial structure of the kinetic and potential energy, and we derive a polynomial kernel that encodes this property. As a consequence, the proposed model allows also to estimate the kinetic and potential energy without requiring any label on these quantities. Results on simulation and on two real robotic manipulators, namely a 7 DOF Franka Emika Panda, and a 6 DOF MELFA RV4FL, show that the proposed model outperforms state-of-the-art black-box estimators based both on Gaussian processes and neural networks in terms of accuracy, generality, and data efficiency. The experiments on the MELFA robot also demonstrate that our approach achieves performance comparable to fine-tuned model-based estimators, despite requiring less prior information. The code of the proposed model is publicly available.},
+   author = {Giulio Giacomuzzo and Ruggero Carli and Diego Romeres and Alberto Dalla Libera},
+   doi = {10.1109/TRO.2024.3474851},
+   issn = {19410468},
+   journal = {IEEE Transactions on Robotics},
+   keywords = {Gaussian processes,manipulator dynamics,robot learning},
+   pages = {4842-4858},
+   publisher = {Institute of Electrical and Electronics Engineers Inc.},
+   title = {A Black-Box Physics-Informed Estimator Based on Gaussian Process Regression for Robot Inverse Dynamics Identification},
+   volume = {40},
+   year = {2024}
+}

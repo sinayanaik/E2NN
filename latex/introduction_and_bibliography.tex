@@ -1,0 +1,55 @@
+\section{Introduction}
+
+\subsection{Motivation \& Background}
+Accurate dynamic models are paramount for the advancement of modern robotics, underpinning critical functionalities such as precise motion control, realistic simulation, and optimized robot design. These models, which describe the relationship between joint torques and the resulting motion, are essential for robots to interact effectively and safely with their environments. As robotic systems become more complex, the demand for highly accurate and robust dynamic models continues to grow. However, creating such models presents a significant challenge, caught between the intractability of analytical methods and the limitations of purely data-driven approaches.
+
+\subsection{Challenges with Traditional and Data-Driven Methods}
+Historically, deriving analytical models using Lagrangian dynamics has been a formidable task. This process involves complex mathematical formulations that scale poorly with the number of degrees of freedom, often requiring extensive manual derivation that is prone to error and becomes intractable for complex robots \cite{Li2025}. The advent of data-driven methods, particularly deep learning, offered a promising alternative. Yet, these "black-box" models, such as the Feedforward (FNN) and Recurrent Neural Networks (RNN) explored in this study, come with their own drawbacks. Their opaque internal workings make it difficult to interpret predictions, and without inherent physical constraints, they can struggle to generalize to unseen trajectories, potentially leading to physically inconsistent predictions, especially when data is scarce \cite{Giacomuzzo2024}.
+
+\subsection{Rise of Physics-Informed Machine Learning}
+To overcome these limitations, Physics-Informed Machine Learning has emerged as a powerful paradigm that embeds fundamental physical laws directly into the neural network's architecture or training process \cite{Liu2024}. By incorporating an "inductive bias" derived from known physics—in this case, the Euler-Lagrange equations of motion—these models can achieve superior accuracy and data efficiency. This approach transforms a purely data-driven model into a hybrid one that is constrained by physical laws, enabling it to learn effectively even from smaller datasets and produce more robust, generalizable predictions \cite{Deng2024, Yang2023}. Our work builds on this principle by proposing an Equation-Embedded Neural Network (E2NN) that learns the components of the robot dynamics equation directly.
+
+\subsection{Contributions \& Paper Outline}
+In this work, we undertake a comparative study to highlight the advantages of a physics-informed approach to robotic dynamics modeling. Our main contribution is the development and rigorous evaluation of an Equation-Embedded Neural Network (E2NN). To create a solid foundation for this analysis, we first built a high-fidelity simulation in PyBullet for generating reliable and repeatable trajectory data. We then benchmarked our structured E2NN against two common black-box architectures, a Feedforward Neural Network (FNN) and a Recurrent Neural Network (RNN). Through detailed quantitative and qualitative analysis, we show that our physics-informed model is markedly superior, yielding more accurate and interpretable torque predictions. The paper is organized as follows: Section 2 details our methodology, Section 3 presents the results, Section 4 discusses our findings and limitations, and Section 5 concludes the paper.
+
+\section{Bibliography}
+
+\begin{thebibliography}{99}
+
+\bibitem{Cranmer2020}
+Cranmer, M., Greydanus, S., Hoyer, S., Battaglia, P., Spergel, D., \& Ho, S. (2020). Lagrangian Neural Networks. \textit{arXiv preprint arXiv:2003.04630}.
+
+\bibitem{Deng2024}
+Deng, W., Ardiani, F., Nguyen, K. T. P., Benoussaad, M., \& Medjaher, K. (2024). Physics informed machine learning model for inverse dynamics in robotic manipulators. \textit{Applied Soft Computing, 163}.
+
+\bibitem{Farea2024}
+Farea, A., Yli-Harja, O., \& Emmert-Streib, F. (2024). Understanding Physics-Informed Neural Networks: Techniques, Applications, Trends, and Challenges. \textit{AI (Switzerland), 5}(3), 1534–1557.
+
+\bibitem{Giacomuzzo2024}
+Giacomuzzo, G., Carli, R., Romeres, D., \& Dalla Libera, A. (2024). A Black-Box Physics-Informed Estimator Based on Gaussian Process Regression for Robot Inverse Dynamics Identification. \textit{IEEE Transactions on Robotics, 40}, 4842–4858.
+
+\bibitem{Li2025}
+Li, Z., Wu, S., Chen, W., \& Sun, F. (2025). Physics-informed neural networks for compliant robotic manipulators dynamic modeling. \textit{Journal of Computational Science, 90}.
+
+\bibitem{Liu2024}
+Liu, J., Borja, P., \& della Santina, C. (2024). Physics-Informed Neural Networks to Model and Control Robots: A Theoretical and Experimental Investigation. \textit{Advanced Intelligent Systems, 6}(5).
+
+\bibitem{Lu2021}
+Lu, L., Pestourie, R., Yao, W., Wang, Z., Verdugo, F., \& Johnson, S. G. (2021). Physics-informed neural networks with hard constraints for inverse design. \textit{arXiv preprint arXiv:2102.04626}.
+
+\bibitem{Moseley_nd}
+Moseley, B. (n.d.). \textit{Physics-informed machine learning: from concepts to real-world applications EPSRC Centre for Doctoral Training in Autonomous Intelligent Machines \& Systems MS}.
+
+\bibitem{Nicodemus2021}
+Nicodemus, J., Kneifl, J., Fehr, J., \& Unger, B. (2021). \textit{Physics-informed Neural Networks-based Model Predictive Control for Multi-link Manipulators}. \textit{arXiv preprint arXiv:2109.10793}.
+
+\bibitem{Roy2024}
+Roy, P., \& Castonguay, S. (2024). \textit{Exact Enforcement of Temporal Continuity in Sequential Physics-Informed Neural Networks}. \textit{arXiv preprint arXiv:2403.03223}.
+
+\bibitem{Wang2023}
+Wang, S., Sankaran, S., Wang, H., \& Perdikaris, P. (2023). \textit{An Expert’s Guide to Training Physics-informed Neural Networks}. \textit{arXiv preprint arXiv:2308.08468}.
+
+\bibitem{Yang2023}
+Yang, X., Du, Y., Li, L., Zhou, Z., \& Zhang, X. (2023). Physics-Informed Neural Network for Model Prediction and Dynamics Parameter Identification of Collaborative Robot Joints. \textit{IEEE Robotics and Automation Letters, 8}(12), 8462–8469.
+
+\end{thebibliography} 
