@@ -1,0 +1,2 @@
+model_type: FNN
+hidden_layers: 64,32

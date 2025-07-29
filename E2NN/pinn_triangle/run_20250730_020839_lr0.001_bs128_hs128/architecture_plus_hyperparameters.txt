@@ -1,0 +1,2 @@
+model_type: E2NN
+hidden_size: 128
