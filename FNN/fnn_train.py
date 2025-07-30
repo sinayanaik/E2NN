@@ -110,6 +110,10 @@ class TrainingApp:
             self.data_path.set(file_path)
 
     def start_training(self):
+        print("Starting training with the following hyperparameters:")
+        for key, var in self.hyperparameters.items():
+            print(f"  {key}: {var.get()}")
+
         try:
             # Load data
             df = pd.read_csv(self.data_path.get())
@@ -262,6 +266,9 @@ class TrainingApp:
             # Save architecture and hyperparameters
             with open(os.path.join(run_path, "architecture_plus_hyperparameters.txt"), "w") as f:
                 f.write(f"model_type: FNN\n")
+                f.write(f"learning_rate: {self.hyperparameters['learning_rate'].get()}\n")
+                f.write(f"batch_size: {self.hyperparameters['batch_size'].get()}\n")
+                f.write(f"epochs: {self.hyperparameters['epochs'].get()}\n")
                 f.write(f"hidden_layers: {self.hyperparameters['hidden_layers'].get()}\n")
 
             # Save performance metrics

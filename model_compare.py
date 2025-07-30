@@ -114,29 +114,74 @@ class ComparisonApp:
         
         self.ground_truth_path = tk.StringVar()
         self.model_entries = []
+        self.plot_prefix = tk.StringVar(value="comparison")
+        self.zoom_start = tk.DoubleVar(value=460)
+        self.zoom_end = tk.DoubleVar(value=520)
+
+        # New plot settings dictionary
+        self.plot_settings = {
+            'x_title': tk.StringVar(value='Timestamp'),
+            'y_title': tk.StringVar(value='Torque (Nm)'),
+            'title_size': tk.IntVar(value=16),
+            'label_size': tk.IntVar(value=12),
+            'legend_size': tk.IntVar(value=10)
+        }
 
         main_frame = ttk.Frame(self.root, padding="10")
         main_frame.grid(sticky=(tk.W, tk.E, tk.N, tk.S))
+        self.root.columnconfigure(0, weight=1)
 
         # Ground Truth Selection
         gt_frame = ttk.LabelFrame(main_frame, text="Ground Truth Data", padding="10")
-        gt_frame.grid(sticky=(tk.W, tk.E), padx=5, pady=5)
+        gt_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=5, pady=5)
         ttk.Label(gt_frame, text="CSV Path:").pack(side=tk.LEFT)
         ttk.Entry(gt_frame, textvariable=self.ground_truth_path, width=80).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=5)
         ttk.Button(gt_frame, text="Browse", command=self.browse_gt).pack(side=tk.LEFT)
 
         # Model Selection
         self.models_frame = ttk.LabelFrame(main_frame, text="Models to Compare", padding="10")
-        self.models_frame.grid(sticky=(tk.W, tk.E), padx=5, pady=5)
+        self.models_frame.grid(row=1, column=0, sticky=(tk.W, tk.E), padx=5, pady=5)
         ttk.Button(self.models_frame, text="Add Model", command=self.add_model_entry).pack()
 
         # Define a list of visually distinct colors
         self.colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
         self.color_index = 0
 
+        # --- New Plot Customization Frame ---
+        customization_frame = ttk.LabelFrame(main_frame, text="Plot Customization", padding="10")
+        customization_frame.grid(row=2, column=0, sticky=(tk.W, tk.E), padx=5, pady=5)
+        
+        # Filename and Zoom
+        top_settings_frame = ttk.Frame(customization_frame)
+        top_settings_frame.pack(fill=tk.X, pady=2)
+        ttk.Label(top_settings_frame, text="Plot Filename Prefix:").pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Entry(top_settings_frame, textvariable=self.plot_prefix, width=20).pack(side=tk.LEFT, padx=(0, 10))
+        ttk.Label(top_settings_frame, text="Zoom Start:").pack(side=tk.LEFT, padx=(10, 5))
+        ttk.Entry(top_settings_frame, textvariable=self.zoom_start, width=8).pack(side=tk.LEFT)
+        ttk.Label(top_settings_frame, text="Zoom End:").pack(side=tk.LEFT, padx=(5, 5))
+        ttk.Entry(top_settings_frame, textvariable=self.zoom_end, width=8).pack(side=tk.LEFT, padx=(0, 10))
+
+        # Titles
+        title_settings_frame = ttk.Frame(customization_frame)
+        title_settings_frame.pack(fill=tk.X, pady=2)
+        ttk.Label(title_settings_frame, text="X-Axis Title:").pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Entry(title_settings_frame, textvariable=self.plot_settings['x_title']).pack(side=tk.LEFT, padx=(0, 10))
+        ttk.Label(title_settings_frame, text="Y-Axis Title:").pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Entry(title_settings_frame, textvariable=self.plot_settings['y_title']).pack(side=tk.LEFT, padx=(0, 10))
+
+        # Font Sizes
+        font_settings_frame = ttk.Frame(customization_frame)
+        font_settings_frame.pack(fill=tk.X, pady=2)
+        ttk.Label(font_settings_frame, text="Title Size:").pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Entry(font_settings_frame, textvariable=self.plot_settings['title_size'], width=5).pack(side=tk.LEFT, padx=(0, 10))
+        ttk.Label(font_settings_frame, text="Label Size:").pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Entry(font_settings_frame, textvariable=self.plot_settings['label_size'], width=5).pack(side=tk.LEFT, padx=(0, 10))
+        ttk.Label(font_settings_frame, text="Legend Size:").pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Entry(font_settings_frame, textvariable=self.plot_settings['legend_size'], width=5).pack(side=tk.LEFT, padx=(0, 10))
+
         # Controls
         control_frame = ttk.Frame(main_frame, padding="10")
-        control_frame.grid(sticky=(tk.W, tk.E), padx=5, pady=5)
+        control_frame.grid(row=3, column=0, sticky=(tk.W, tk.E), padx=5, pady=5)
         ttk.Button(control_frame, text="Generate Comparison Plot", command=self.generate_plot).pack()
 
     def browse_gt(self):
@@ -145,26 +190,56 @@ class ComparisonApp:
 
     def add_model_entry(self):
         entry_frame = ttk.Frame(self.models_frame)
-        entry_frame.pack(fill=tk.X, pady=2)
+        entry_frame.pack(fill=tk.X, pady=5, padx=5)
 
         model_path = tk.StringVar()
         legend_name = tk.StringVar()
-        color = self.colors[self.color_index % len(self.colors)]
+        
+        color_val = self.colors[self.color_index % len(self.colors)]
         self.color_index += 1
+        color_var = tk.StringVar(value=color_val)
+        line_style_var = tk.StringVar(value='solid')
 
-        ttk.Label(entry_frame, text="Model Path (.pth):").pack(side=tk.LEFT)
-        entry = ttk.Entry(entry_frame, textvariable=model_path, width=60)
+        # Model Path
+        ttk.Label(entry_frame, text="Model:").pack(side=tk.LEFT)
+        entry = ttk.Entry(entry_frame, textvariable=model_path, width=40)
         entry.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=5)
-        ttk.Button(entry_frame, text="Browse", command=lambda p=model_path: self.browse_model(p)).pack(side=tk.LEFT)
+        ttk.Button(entry_frame, text="Browse", command=lambda p=model_path, l=legend_name: self.browse_model(p, l)).pack(side=tk.LEFT)
         
+        # Legend
         ttk.Label(entry_frame, text="Legend:").pack(side=tk.LEFT, padx=5)
-        ttk.Entry(entry_frame, textvariable=legend_name, width=20).pack(side=tk.LEFT)
+        ttk.Entry(entry_frame, textvariable=legend_name, width=15).pack(side=tk.LEFT)
         
-        self.model_entries.append({'path': model_path, 'legend': legend_name, 'color': color, 'frame': entry_frame})
+        # Color Chooser
+        color_label = ttk.Label(entry_frame, text="      ", background=color_val, relief="solid", borderwidth=1)
+        color_label.pack(side=tk.LEFT, padx=(10, 2), ipady=2)
+        def choose_color_for_entry():
+            chosen_color = colorchooser.askcolor(color=color_var.get())[1]
+            if chosen_color:
+                color_var.set(chosen_color)
+                color_label.config(background=chosen_color)
+        ttk.Button(entry_frame, text="Color", command=choose_color_for_entry).pack(side=tk.LEFT)
 
-    def browse_model(self, path_var):
+        # Line Style
+        ttk.Label(entry_frame, text="Style:").pack(side=tk.LEFT, padx=(10, 2))
+        style_dropdown = ttk.Combobox(entry_frame, textvariable=line_style_var, values=['solid', 'dashed', 'dotted', 'dotdash'], width=7, state="readonly")
+        style_dropdown.pack(side=tk.LEFT)
+        style_dropdown.set('solid')
+
+        self.model_entries.append({'path': model_path, 'legend': legend_name, 'color': color_var, 'line_style': line_style_var, 'frame': entry_frame})
+
+    def browse_model(self, path_var, legend_var):
         path = filedialog.askopenfilename(title="Select Model File", filetypes=[("PyTorch models", "*.pth")])
-        if path: path_var.set(path)
+        if path:
+            path_var.set(path)
+            # Auto-fill legend name with a more descriptive one from the parent directory
+            try:
+                # e.g., .../1_very_good/run_.../model.pth -> "1_very_good"
+                parent_dir_name = os.path.basename(os.path.dirname(os.path.dirname(path)))
+                legend_var.set(parent_dir_name)
+            except Exception:
+                # Fallback to filename without extension
+                legend_var.set(os.path.basename(path).rsplit('.', 1)[0])
 
     def generate_plot(self):
         try:
@@ -238,65 +313,141 @@ class ComparisonApp:
             chart_paths = []
             self.charts = [] # To store chart objects for saving
 
+            # Get global plot settings
+            x_title = self.plot_settings['x_title'].get()
+            y_title = self.plot_settings['y_title'].get()
+            title_size = self.plot_settings['title_size'].get()
+            label_size = self.plot_settings['label_size'].get()
+            legend_size = self.plot_settings['legend_size'].get()
+
             for i, joint_target in enumerate(targets):
-                plot_data = pd.DataFrame({
+                # --- Restructured Plotting Logic ---
+                plot_data_list = []
+                metrics_summary = []
+                all_metrics[joint_target] = {}
+
+                # Setup color and dash scales
+                color_domain = ['Ground Truth']
+                color_range = ['#000000']
+                altair_dash_map = {'solid': [], 'dashed': [8, 4], 'dotted': [2, 2], 'dotdash': [8, 4, 2, 4]}
+                dash_domain = ['Ground Truth']
+                dash_range = [altair_dash_map['solid']]
+
+                # Add Ground Truth data
+                gt_temp_df = pd.DataFrame({
                     'timestamp': df_gt.index,
                     'Torque': df_gt[joint_target],
                     'Legend': 'Ground Truth'
                 })
+                plot_data_list.append(gt_temp_df)
                 
-                metrics_summary = []
-                all_metrics[joint_target] = {}
-                
-                color_domain = ['Ground Truth']
-                color_range = ['#000000'] # Black for ground truth
-
+                # Process each model's prediction
                 for pred_data in all_predictions:
                     legend = pred_data['legend']
                     preds = pred_data['preds']
                     seq_len = pred_data['seq_len']
+                    
+                    # Get model-specific style settings
+                    model_entry = next((m for m in self.model_entries if m['legend'].get() == legend), None)
+                    if not model_entry: continue
 
-                    # Find the corresponding color from model_entries
-                    model_color = next((m['color'] for m in self.model_entries if m['legend'].get() == legend), '#000000')
                     color_domain.append(legend)
-                    color_range.append(model_color)
-                    
+                    color_range.append(model_entry['color'].get())
+                    dash_domain.append(legend)
+                    dash_range.append(altair_dash_map.get(model_entry['line_style'].get(), []))
+
                     pred_col = f"predicted_{joint_target}"
-                    
                     temp_df = pd.DataFrame({
                         'timestamp': df_gt.index[seq_len:] if seq_len > 0 else df_gt.index,
                         'Torque': preds[pred_col],
                         'Legend': legend
                     })
-                    plot_data = pd.concat([plot_data, temp_df])
+                    plot_data_list.append(temp_df)
 
                     # Calculate metrics
                     y_true = df_gt[joint_target].values[seq_len:] if seq_len > 0 else df_gt[joint_target].values
                     y_pred = preds[pred_col].values
-                    
-                    mse = np.mean((y_true - y_pred)**2)
-                    rmse = np.sqrt(mse)
+                    mse = np.mean((y_true - y_pred)**2); rmse = np.sqrt(mse)
                     mae = np.mean(np.abs(y_true - y_pred))
                     r2 = 1 - (np.sum((y_true - y_pred)**2) / np.sum((y_true - np.mean(y_true))**2))
-                    
                     all_metrics[joint_target][legend] = {'MSE': mse, 'RMSE': rmse, 'MAE': mae, 'R²': r2}
                     metrics_summary.append(f"{legend} (RMSE: {rmse:.3f}, R²: {r2:.3f})")
 
+                plot_data = pd.concat(plot_data_list)
                 chart_title = f"Torque Comparison for {joint_target.replace('_', ' ').title()}"
                 chart_subtitle = " | ".join(metrics_summary)
 
-                chart = alt.Chart(plot_data).mark_line(point=False).encode(
-                    x='timestamp:Q',
-                    y='Torque:Q',
-                    color=alt.Color('Legend:N', scale=alt.Scale(domain=color_domain, range=color_range)),
+                base_chart = alt.Chart(plot_data).mark_line(point=False).encode(
+                    x=alt.X('timestamp:Q', title=x_title),
+                    y=alt.Y('Torque:Q', title=y_title),
+                    color=alt.Color('Legend:N', 
+                                  scale=alt.Scale(domain=color_domain, range=color_range),
+                                  legend=alt.Legend(title="Model")),
+                    strokeDash=alt.StrokeDash('Legend:N', 
+                                            scale=alt.Scale(domain=dash_domain, range=dash_range)),
+                    order='timestamp:Q'
                 ).properties(
-                    title={'text': chart_title, 'subtitle': chart_subtitle}
-                ).interactive()
+                    title={'text': chart_title, 'subtitle': chart_subtitle},
+                    width=800
+                )
 
-                chart_path = f'comparison_{joint_target}.html'
-                chart.save(chart_path)
+                # --- Zoomed View Logic ---
+                try:
+                    zoom_x_start = self.zoom_start.get()
+                    zoom_x_end = self.zoom_end.get()
+                    if zoom_x_start >= zoom_x_end:
+                        messagebox.showwarning("Invalid Range", "Zoom Start must be less than Zoom End. Using default values.")
+                        zoom_x_start, zoom_x_end = 460, 520
+                except (tk.TclError, ValueError):
+                    messagebox.showwarning("Invalid Input", "Invalid zoom range values. Please enter numbers. Using default values.")
+                    zoom_x_start, zoom_x_end = 460, 520
+
+                # Rectangle to highlight the zoom area on the main chart
+                zoom_area_highlight = alt.Chart(pd.DataFrame([
+                    {'x': zoom_x_start, 'x2': zoom_x_end}
+                ])).mark_rect(
+                    opacity=0.2, color='gray'
+                ).encode(x='x', x2='x2')
+
+                # We create a new chart object to avoid property inheritance issues
+                zoomed_chart = alt.Chart(plot_data).mark_line(point=False).encode(
+                    x=alt.X('timestamp:Q', 
+                            scale=alt.Scale(domain=[zoom_x_start, zoom_x_end]),
+                            title=f"Zoomed View (Timestamp {zoom_x_start} to {zoom_x_end})"),
+                    y=alt.Y('Torque:Q', scale=alt.Scale(zero=False), title=y_title),
+                    color=alt.Color('Legend:N', scale=alt.Scale(domain=color_domain, range=color_range), legend=None),
+                    strokeDash=alt.StrokeDash('Legend:N', scale=alt.Scale(domain=dash_domain, range=dash_range), legend=None),
+                    order='timestamp:Q'
+                ).properties(
+                    width=800,
+                    height=200
+                )
+
+                # Layer the main chart with its highlight
+                main_chart_with_highlight = base_chart + zoom_area_highlight
+
+                # Combine the main chart (with highlight) and the zoomed chart vertically
+                # Apply configurations to the final concatenated chart
+                final_chart = alt.vconcat(
+                    main_chart_with_highlight.interactive(),
+                    zoomed_chart.interactive()
+                ).configure_title(
+                    fontSize=title_size
+                ).configure_axis(
+                    labelFontSize=label_size,
+                    titleFontSize=label_size
+                ).configure_legend(
+                    titleFontSize=label_size,
+                    labelFontSize=legend_size
+                )
+                
+                prefix = self.plot_prefix.get().strip()
+                if not prefix:
+                    prefix = "comparison"
+                chart_path = f'{prefix}_{joint_target}.html'
+                final_chart.save(chart_path)
                 chart_paths.append(chart_path)
-                self.charts.append(chart) # Save chart object
+                self.charts.append(final_chart) # Save chart object
 
             self.display_metrics_window(all_metrics)
             for path in chart_paths:
