@@ -1069,7 +1069,7 @@ def main():
         for i in range(len(trajectory_points) - 1):
             p1 = [trajectory_points[i][0], 0, trajectory_points[i][1]]
             p2 = [trajectory_points[i + 1][0], 0, trajectory_points[i + 1][1]]
-            p.addUserDebugLine(p1, p2, lineColorRGB=[1, 0, 0], lineWidth=2)
+            p.addUserDebugLine(p1, p2, lineColorRGB=[1, 0, 0], lineWidth=5)
         
         # Variable to store previous trajectory parameters for change detection
         prev_params = (center_x, center_z, radius)

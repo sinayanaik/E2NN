@@ -732,7 +732,7 @@ def main():
         
         trajectory_points = generate_triangular_trajectory(center_x, center_z, radius, num_trajectory_points)
         
-        marker_radius = 0.0165
+        marker_radius = 0.0000065
         marker_color = [0, 1, 0, 1]
         
         marker_visual = p.createVisualShape(
@@ -752,7 +752,7 @@ def main():
         for i in range(len(trajectory_points) - 1):
             p1 = [trajectory_points[i][0], 0, trajectory_points[i][1]]
             p2 = [trajectory_points[i + 1][0], 0, trajectory_points[i + 1][1]]
-            p.addUserDebugLine(p1, p2, lineColorRGB=[1, 0, 0], lineWidth=2)
+            p.addUserDebugLine(p1, p2, lineColorRGB=[1, 0, 0], lineWidth=5)
         
         prev_params = (center_x, center_z, radius)
         triangle_count = 0
