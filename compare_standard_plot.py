@@ -49,7 +49,11 @@ class ComparisonApp:
         
         # --- Settings with default values ---
         self.zoom_center_x, self.zoom_x_range = tk.DoubleVar(value=490), tk.DoubleVar(value=60)
-        self.inset_radius, self.inset_cx, self.inset_cy = tk.DoubleVar(value=0.20), tk.DoubleVar(value=0.75), tk.DoubleVar(value=0.35)
+        self.inset_radius = tk.DoubleVar(value=0.15)
+        # Individual joint magnifier positions
+        self.joint1_pos = {'x': tk.DoubleVar(value=0.75), 'y': tk.DoubleVar(value=0.35)}
+        self.joint2_pos = {'x': tk.DoubleVar(value=0.75), 'y': tk.DoubleVar(value=0.35)}
+        self.joint3_pos = {'x': tk.DoubleVar(value=0.75), 'y': tk.DoubleVar(value=0.35)}
         self.plot_settings = {'width': tk.DoubleVar(value=16), 'height': tk.DoubleVar(value=9),
                               'x_title': tk.StringVar(value='Timestamp'), 'y_title': tk.StringVar(value='Torque (Nm)'),
                               'axis_title_size': tk.IntVar(value=16), 'label_size': tk.IntVar(value=14), 
@@ -87,10 +91,30 @@ class ComparisonApp:
             ttk.Entry(psf, textvariable=var, width=15).grid(row=i, column=1, sticky="ew", padx=2)
 
         mf = ttk.LabelFrame(sf, text="Magnifier Settings", padding=10); mf.grid(row=0, column=1, sticky="nsew", padx=5); mf.columnconfigure(1, weight=1)
-        for i, (label, var) in enumerate([("Zoom At Timestamp:", self.zoom_center_x), ("Zoom Width:", self.zoom_x_range), ("Magnifier Size:", self.inset_radius),
-                                          ("Horiz. Position:", self.inset_cx), ("Vert. Position:", self.inset_cy)]):
-            ttk.Label(mf, text=label).grid(row=i, column=0, sticky="w", padx=2, pady=2)
-            ttk.Entry(mf, textvariable=var, width=10).grid(row=i, column=1, sticky="ew", padx=2)
+        
+        # General magnifier settings
+        ttk.Label(mf, text="Zoom At Timestamp:").grid(row=0, column=0, sticky="w", padx=2, pady=2)
+        ttk.Entry(mf, textvariable=self.zoom_center_x, width=10).grid(row=0, column=1, sticky="ew", padx=2)
+        ttk.Label(mf, text="Zoom Width:").grid(row=1, column=0, sticky="w", padx=2, pady=2)
+        ttk.Entry(mf, textvariable=self.zoom_x_range, width=10).grid(row=1, column=1, sticky="ew", padx=2)
+        ttk.Label(mf, text="Magnifier Size:").grid(row=2, column=0, sticky="w", padx=2, pady=2)
+        ttk.Entry(mf, textvariable=self.inset_radius, width=10).grid(row=2, column=1, sticky="ew", padx=2)
+        
+        # Joint-specific positions
+        ttk.Label(mf, text="Joint1 X Pos:").grid(row=3, column=0, sticky="w", padx=2, pady=2)
+        ttk.Entry(mf, textvariable=self.joint1_pos['x'], width=10).grid(row=3, column=1, sticky="ew", padx=2)
+        ttk.Label(mf, text="Joint1 Y Pos:").grid(row=4, column=0, sticky="w", padx=2, pady=2)
+        ttk.Entry(mf, textvariable=self.joint1_pos['y'], width=10).grid(row=4, column=1, sticky="ew", padx=2)
+        
+        ttk.Label(mf, text="Joint2 X Pos:").grid(row=5, column=0, sticky="w", padx=2, pady=2)
+        ttk.Entry(mf, textvariable=self.joint2_pos['x'], width=10).grid(row=5, column=1, sticky="ew", padx=2)
+        ttk.Label(mf, text="Joint2 Y Pos:").grid(row=6, column=0, sticky="w", padx=2, pady=2)
+        ttk.Entry(mf, textvariable=self.joint2_pos['y'], width=10).grid(row=6, column=1, sticky="ew", padx=2)
+        
+        ttk.Label(mf, text="Joint3 X Pos:").grid(row=7, column=0, sticky="w", padx=2, pady=2)
+        ttk.Entry(mf, textvariable=self.joint3_pos['x'], width=10).grid(row=7, column=1, sticky="ew", padx=2)
+        ttk.Label(mf, text="Joint3 Y Pos:").grid(row=8, column=0, sticky="w", padx=2, pady=2)
+        ttk.Entry(mf, textvariable=self.joint3_pos['y'], width=10).grid(row=8, column=1, sticky="ew", padx=2)
 
     def add_model_entry(self):
         ef = ttk.Frame(self.models_frame); ef.pack(fill=tk.X, pady=5, padx=5)
@@ -128,15 +152,39 @@ class ComparisonApp:
             df_gt = pd.read_csv(self.ground_truth_path.get(), engine='python')
             targets = ['joint1_torque', 'joint2_torque', 'joint3_torque']
             all_predictions = self.predict_models(df_gt, targets)
+            
+            # --- Individual Plots ---
             for joint_target in targets:
                 fig, ax = plt.subplots(figsize=(self.plot_settings['width'].get(), self.plot_settings['height'].get()))
                 self.plot_all_curves(ax, df_gt, all_predictions, joint_target)
                 self.create_circular_magnifier(fig, ax, df_gt, all_predictions, joint_target)
                 plt.tight_layout(pad=1.0)
                 chart_path = f"{(self.plot_prefix.get() or 'comparison')}_{joint_target}.png"
-                plt.savefig(chart_path, dpi=1000, bbox_inches='tight')
+                plt.savefig(chart_path, dpi=300, bbox_inches='tight')
                 plt.close(fig)
                 webbrowser.open('file://' + os.path.realpath(chart_path))
+
+            # --- Combined Plot ---
+            n_joints = len(targets)
+            fig_combined, axes_combined = plt.subplots(n_joints, 1, figsize=(self.plot_settings['width'].get(), self.plot_settings['height'].get() * n_joints * 0.6), sharex=True)
+            if n_joints == 1: axes_combined = [axes_combined]
+
+            for i, ax in enumerate(axes_combined):
+                joint_target = targets[i]
+                self.plot_all_curves(ax, df_gt, all_predictions, joint_target, draw_legend=False)
+                self.create_circular_magnifier(fig_combined, ax, df_gt, all_predictions, joint_target)
+                ax.set_ylabel(f"{joint_target.replace('_', ' ').title()} (Nm)", fontsize=self.plot_settings['axis_title_size'].get())
+                if i < n_joints - 1: ax.set_xlabel('')
+            
+            handles, labels = axes_combined[0].get_legend_handles_labels()
+            fig_combined.legend(handles, labels, loc='lower center', bbox_to_anchor=(0.5, 1.0), ncol=len(labels), frameon=False, fontsize=self.plot_settings['legend_size'].get())
+            fig_combined.tight_layout(rect=[0, 0.03, 1, 0.99])
+            
+            combined_path = f"{(self.plot_prefix.get() or 'comparison')}_all_joints.png"
+            plt.savefig(combined_path, dpi=1000, bbox_inches='tight')
+            plt.close(fig_combined)
+            webbrowser.open('file://' + os.path.realpath(combined_path))
+
         except Exception as e:
             messagebox.showerror("Error", f"Plot generation failed: {e}\n{traceback.format_exc()}"); traceback.print_exc()
 
@@ -165,7 +213,7 @@ class ComparisonApp:
             predictions.append({'preds': pd.DataFrame(preds, columns=[f"predicted_{t}" for t in targets]), 'seq_len': sl, 'entry': entry})
         return predictions
 
-    def plot_all_curves(self, ax, df_gt, all_predictions, joint_target):
+    def plot_all_curves(self, ax, df_gt, all_predictions, joint_target, draw_legend=True):
         ax.plot(df_gt.index, df_gt[joint_target], label='GROUND TRUTH', color='black', lw=2.5, zorder=10)
         for pred_data in all_predictions:
             entry, preds, seq_len = pred_data['entry'], pred_data['preds'], pred_data['seq_len']
@@ -176,20 +224,30 @@ class ComparisonApp:
         ax.set_xlabel(self.plot_settings['x_title'].get(), fontsize=self.plot_settings['axis_title_size'].get())
         ax.set_ylabel(self.plot_settings['y_title'].get(), fontsize=self.plot_settings['axis_title_size'].get())
         ax.tick_params(axis='both', which='major', labelsize=self.plot_settings['label_size'].get())
-        ax.legend(loc='lower center', bbox_to_anchor=(0.5, 1.01), ncol=len(all_predictions) + 1,
-                  fontsize=self.plot_settings['legend_size'].get(), frameon=False)
+        if draw_legend:
+            ax.legend(loc='lower center', bbox_to_anchor=(0.5, 1.01), ncol=len(all_predictions) + 1,
+                      fontsize=self.plot_settings['legend_size'].get(), frameon=False)
         ax.grid(True, which='both', linestyle='--', linewidth=0.5)
 
     def create_circular_magnifier(self, fig, ax, df_gt, all_predictions, joint_target):
-        cx, cy, radius = self.inset_cx.get(), self.inset_cy.get(), self.inset_radius.get()
+        radius = self.inset_radius.get()
         zoom_center, zoom_range = self.zoom_center_x.get(), self.zoom_x_range.get()
         zoom_x1, zoom_x2 = zoom_center - zoom_range / 2, zoom_center + zoom_range / 2
         
-        ax_pos = ax.get_position(); ax_aspect = (ax_pos.width * fig.get_figwidth()) / (ax_pos.height * fig.get_figheight())
-        radius_y = radius / ax_aspect
+        # Get joint-specific position
+        if 'joint1' in joint_target:
+            cx, cy = self.joint1_pos['x'].get(), self.joint1_pos['y'].get()
+        elif 'joint2' in joint_target:
+            cx, cy = self.joint2_pos['x'].get(), self.joint2_pos['y'].get()
+        elif 'joint3' in joint_target:
+            cx, cy = self.joint3_pos['x'].get(), self.joint3_pos['y'].get()
+        else:
+            cx, cy = 0.75, 0.35  # default position
         
-        axins = ax.inset_axes([cx - radius, cy - radius_y, 2 * radius, 2 * radius_y], transform=ax.transAxes, zorder=12)
+        # Create circular inset (perfect circle)
+        axins = ax.inset_axes([cx - radius, cy - radius, 2 * radius, 2 * radius], transform=ax.transAxes, zorder=12)
         
+        # Plot data in inset
         for pred_data in all_predictions + [{'entry': {'color': tk.StringVar(value='black'), 'line_style': tk.StringVar(value='solid'), 'line_width': tk.DoubleVar(value=2.5)}, 'preds': df_gt.rename(columns={joint_target: f"predicted_{joint_target}"}), 'seq_len': 0}]:
             entry, preds, seq_len = pred_data['entry'], pred_data['preds'], pred_data['seq_len']
             ts = df_gt.index[seq_len:] if seq_len > 0 else df_gt.index
@@ -204,20 +262,25 @@ class ComparisonApp:
         axins.set_facecolor('white'); axins.tick_params(left=False, labelleft=False, bottom=False, labelbottom=False)
         for spine in axins.spines.values(): spine.set_visible(False)
         
-        clip_ellipse = Ellipse((0.5, 0.5), 1, 1, transform=axins.transAxes, facecolor='none', edgecolor='none')
-        axins.add_patch(clip_ellipse)
-        for artist in axins.get_children(): artist.set_clip_path(clip_ellipse)
+        # Perfect circle clipping
+        from matplotlib.patches import Circle
+        clip_circle = Circle((0.5, 0.5), 0.5, transform=axins.transAxes, facecolor='none', edgecolor='none')
+        axins.add_patch(clip_circle)
+        for artist in axins.get_children(): artist.set_clip_path(clip_circle)
 
-        border = Ellipse((cx, cy), 2 * radius, 2 * radius_y, transform=ax.transAxes, facecolor='none', edgecolor='black', lw=1.5, zorder=13)
+        # Perfect circle border
+        border = Circle((cx, cy), radius, transform=ax.transAxes, facecolor='none', edgecolor='black', lw=1.5, zorder=13)
         ax.add_patch(border)
         
+        # Highlight rectangle on main plot
         rect_patch = plt.Rectangle((zoom_x1, min_y), zoom_x2 - zoom_x1, max_y - min_y, fc='grey', ec='black', alpha=0.15, ls='--')
         ax.add_patch(rect_patch)
         
+        # Connection lines
         for x_coord, corner in [(zoom_x1, 'left'), (zoom_x2, 'right')]:
             xyA = (x_coord, min_y + (max_y-min_y)/2)
             angle = np.deg2rad(225 if corner == 'left' else -45)
-            xyB = (cx + radius * np.cos(angle), cy + radius_y * np.sin(angle))
+            xyB = (cx + radius * np.cos(angle), cy + radius * np.sin(angle))
             ax.add_artist(ConnectionPatch(xyA=xyA, xyB=xyB, coordsA=ax.transData, coordsB=ax.transAxes, ec="gray", lw=1, ls='--', zorder=12))
 
 if __name__ == "__main__":
