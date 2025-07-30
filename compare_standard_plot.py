@@ -52,7 +52,8 @@ class ComparisonApp:
         self.inset_radius, self.inset_cx, self.inset_cy = tk.DoubleVar(value=0.20), tk.DoubleVar(value=0.75), tk.DoubleVar(value=0.35)
         self.plot_settings = {'width': tk.DoubleVar(value=16), 'height': tk.DoubleVar(value=9),
                               'x_title': tk.StringVar(value='Timestamp'), 'y_title': tk.StringVar(value='Torque (Nm)'),
-                              'label_size': tk.IntVar(value=14), 'legend_size': tk.IntVar(value=10)}
+                              'axis_title_size': tk.IntVar(value=16), 'label_size': tk.IntVar(value=14), 
+                              'legend_size': tk.IntVar(value=10)}
 
         main_frame = ttk.Frame(self.root, padding="10"); main_frame.grid(sticky="nsew"); self.root.columnconfigure(0, weight=1)
         self.setup_data_ui(main_frame)
@@ -75,10 +76,13 @@ class ComparisonApp:
         sf = ttk.Frame(p, padding="5"); sf.grid(row=2, column=0, sticky="ew", padx=5, pady=5); sf.columnconfigure((0,1), weight=1)
         
         psf = ttk.LabelFrame(sf, text="Plot Settings", padding=10); psf.grid(row=0, column=0, sticky="nsew", padx=5); psf.columnconfigure(1, weight=1)
-        # Simplified creation of labeled entries
-        for i, (label, var) in enumerate([("Filename Prefix:", self.plot_prefix), ("Plot Width:", self.plot_settings['width']), ("Plot Height:", self.plot_settings['height']),
-                                          ("X-Axis Title:", self.plot_settings['x_title']), ("Y-Axis Title:", self.plot_settings['y_title']), 
-                                          ("Label Size:", self.plot_settings['label_size']), ("Legend Size:", self.plot_settings['legend_size'])]):
+        
+        settings_vars = [("Filename Prefix:", self.plot_prefix), ("Plot Width:", self.plot_settings['width']), ("Plot Height:", self.plot_settings['height']),
+                         ("X-Axis Title:", self.plot_settings['x_title']), ("Y-Axis Title:", self.plot_settings['y_title']), 
+                         ("Axis Title Size:", self.plot_settings['axis_title_size']),
+                         ("Tick Label Size:", self.plot_settings['label_size']), 
+                         ("Legend Size:", self.plot_settings['legend_size'])]
+        for i, (label, var) in enumerate(settings_vars):
             ttk.Label(psf, text=label).grid(row=i, column=0, sticky="w", padx=2, pady=2)
             ttk.Entry(psf, textvariable=var, width=15).grid(row=i, column=1, sticky="ew", padx=2)
 
@@ -95,14 +99,10 @@ class ComparisonApp:
         entry_vars = {'path': tk.StringVar(), 'legend': tk.StringVar(), 'color': tk.StringVar(value=color), 
                       'line_style': tk.StringVar(value='solid'), 'line_width': tk.DoubleVar(value=1.8)}
 
-        # Model Path and Browse
         ttk.Label(ef, text="Model:").pack(side=tk.LEFT); ttk.Entry(ef, textvariable=entry_vars['path'], width=30).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=5)
         ttk.Button(ef, text="Browse", command=lambda v=entry_vars: self.browse_model(v)).pack(side=tk.LEFT)
-        
-        # Legend Name
         ttk.Label(ef, text="Legend:").pack(side=tk.LEFT, padx=(10,2)); ttk.Entry(ef, textvariable=entry_vars['legend'], width=15).pack(side=tk.LEFT)
         
-        # Line Style Configuration
         cl = ttk.Label(ef, text="      ", background=color, relief="solid"); cl.pack(side=tk.LEFT, padx=(10, 2), ipady=2)
         ttk.Button(ef, text="Color", command=lambda v=entry_vars['color'], l=cl: self.choose_color(v, l)).pack(side=tk.LEFT)
         
@@ -134,7 +134,7 @@ class ComparisonApp:
                 self.create_circular_magnifier(fig, ax, df_gt, all_predictions, joint_target)
                 plt.tight_layout(pad=1.0)
                 chart_path = f"{(self.plot_prefix.get() or 'comparison')}_{joint_target}.png"
-                plt.savefig(chart_path, dpi=300, bbox_inches='tight')
+                plt.savefig(chart_path, dpi=1000, bbox_inches='tight')
                 plt.close(fig)
                 webbrowser.open('file://' + os.path.realpath(chart_path))
         except Exception as e:
@@ -173,8 +173,9 @@ class ComparisonApp:
             ax.plot(ts, preds[f"predicted_{joint_target}"].values, label=entry['legend'].get(), color=entry['color'].get(), 
                     linestyle=entry['line_style'].get(), lw=entry['line_width'].get())
 
-        ax.set_xlabel(self.plot_settings['x_title'].get(), fontsize=self.plot_settings['label_size'].get())
-        ax.set_ylabel(self.plot_settings['y_title'].get(), fontsize=self.plot_settings['label_size'].get())
+        ax.set_xlabel(self.plot_settings['x_title'].get(), fontsize=self.plot_settings['axis_title_size'].get())
+        ax.set_ylabel(self.plot_settings['y_title'].get(), fontsize=self.plot_settings['axis_title_size'].get())
+        ax.tick_params(axis='both', which='major', labelsize=self.plot_settings['label_size'].get())
         ax.legend(loc='lower center', bbox_to_anchor=(0.5, 1.01), ncol=len(all_predictions) + 1,
                   fontsize=self.plot_settings['legend_size'].get(), frameon=False)
         ax.grid(True, which='both', linestyle='--', linewidth=0.5)
