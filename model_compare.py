@@ -327,17 +327,17 @@ class ComparisonApp:
                 all_metrics[joint_target] = {}
 
                 # Setup color and dash scales
-                color_domain = ['Ground Truth']
+                color_domain = ['GROUND TRUTH']
                 color_range = ['#000000']
                 altair_dash_map = {'solid': [], 'dashed': [8, 4], 'dotted': [2, 2], 'dotdash': [8, 4, 2, 4]}
-                dash_domain = ['Ground Truth']
+                dash_domain = ['GROUND TRUTH']
                 dash_range = [altair_dash_map['solid']]
 
                 # Add Ground Truth data
                 gt_temp_df = pd.DataFrame({
                     'timestamp': df_gt.index,
                     'Torque': df_gt[joint_target],
-                    'Legend': 'Ground Truth'
+                    'Legend': 'GROUND TRUTH'
                 })
                 plot_data_list.append(gt_temp_df)
                 
