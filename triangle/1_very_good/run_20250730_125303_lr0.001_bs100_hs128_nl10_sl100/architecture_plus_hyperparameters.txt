@@ -1,0 +1,4 @@
+model_type: RNN
+hidden_size: 128
+num_layers: 10
+seq_length: 100
