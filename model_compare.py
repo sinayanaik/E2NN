@@ -410,9 +410,14 @@ class ComparisonApp:
                 ).encode(x='x', x2='x2')
 
                 # We create a new chart object to avoid property inheritance issues
-                zoomed_chart = alt.Chart(plot_data).mark_line(point=False).encode(
+                # Filter data for the zoom view explicitly for robustness
+                zoomed_plot_data = plot_data[
+                    (plot_data['timestamp'] >= zoom_x_start) & 
+                    (plot_data['timestamp'] <= zoom_x_end)
+                ].copy()
+
+                zoomed_chart = alt.Chart(zoomed_plot_data).mark_line(point=False).encode(
                     x=alt.X('timestamp:Q', 
-                            scale=alt.Scale(domain=[zoom_x_start, zoom_x_end]),
                             title=f"Zoomed View (Timestamp {zoom_x_start} to {zoom_x_end})"),
                     y=alt.Y('Torque:Q', scale=alt.Scale(zero=False), title=y_title),
                     color=alt.Color('Legend:N', scale=alt.Scale(domain=color_domain, range=color_range), legend=None),
