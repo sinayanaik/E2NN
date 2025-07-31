@@ -55,7 +55,7 @@ class ComparisonApp:
         self.joint2_pos = {'x': tk.DoubleVar(value=0.75), 'y': tk.DoubleVar(value=0.35)}
         self.joint3_pos = {'x': tk.DoubleVar(value=0.75), 'y': tk.DoubleVar(value=0.35)}
         self.plot_settings = {'width': tk.DoubleVar(value=32), 'height': tk.DoubleVar(value=18),
-                              'x_title': tk.StringVar(value='Timestamp'), 'y_title': tk.StringVar(value='Torque (Nm)'),
+                              'x_title': tk.StringVar(value='Timestamp'), 'y_title': tk.StringVar(value='τ (Nm)'),
                               'axis_title_size': tk.IntVar(value=50), 'label_size': tk.IntVar(value=50), 
                               'legend_size': tk.IntVar(value=50)}
 
@@ -160,7 +160,7 @@ class ComparisonApp:
                 self.create_circular_magnifier(fig, ax, df_gt, all_predictions, joint_target)
                 # Set custom Y-axis label for individual plots
                 joint_number = joint_target.replace('joint', '').replace('_torque', '')
-                ax.set_ylabel(f"Joint {joint_number} Torque (Nm)", fontsize=self.plot_settings['axis_title_size'].get())
+                ax.set_ylabel(f"Joint {joint_number} τ (Nm)", fontsize=self.plot_settings['axis_title_size'].get())
                 plt.tight_layout(pad=1.0)
                 chart_path = f"{(self.plot_prefix.get() or 'comparison')}_{joint_target}.png"
                 plt.savefig(chart_path, dpi=100, bbox_inches='tight')
@@ -178,11 +178,11 @@ class ComparisonApp:
                 self.create_circular_magnifier(fig_combined, ax, df_gt, all_predictions, joint_target)
                 # Set custom Y-axis label for combined plot
                 joint_number = joint_target.replace('joint', '').replace('_torque', '')
-                ax.set_ylabel(f"Joint {joint_number} Torque (Nm)", fontsize=self.plot_settings['axis_title_size'].get())
+                ax.set_ylabel(f"Joint {joint_number} τ (Nm)", fontsize=self.plot_settings['axis_title_size'].get())
                 if i < n_joints - 1: ax.set_xlabel('')
             
             handles, labels = axes_combined[0].get_legend_handles_labels()
-            fig_combined.subplots_adjust(top=0.92)
+            fig_combined.subplots_adjust(top=0.92, left=0.02, bottom=0.08)
             fig_combined.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 0.98),
                                 ncol=len(labels), frameon=False, fontsize=self.plot_settings['legend_size'].get())
             

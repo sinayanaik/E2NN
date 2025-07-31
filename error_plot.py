@@ -47,10 +47,10 @@ class ErrorPlotApp:
         self.ground_truth_path, self.model_entries, self.plot_prefix = tk.StringVar(), [], tk.StringVar(value="error")
         
         # --- Settings with default values ---
-        self.plot_settings = {'width': tk.DoubleVar(value=16), 'height': tk.DoubleVar(value=9),
-                              'x_title': tk.StringVar(value='Timestamp'), 'y_title': tk.StringVar(value='Error (Nm)'),
-                              'axis_title_size': tk.IntVar(value=16), 'label_size': tk.IntVar(value=14), 
-                              'legend_size': tk.IntVar(value=10)}
+        self.plot_settings = {'width': tk.DoubleVar(value=32), 'height': tk.DoubleVar(value=18),
+                              'x_title': tk.StringVar(value='Timestamp'), 'y_title': tk.StringVar(value='Error τ (Nm)'),
+                              'axis_title_size': tk.IntVar(value=50), 'label_size': tk.IntVar(value=50), 
+                              'legend_size': tk.IntVar(value=50)}
 
         main_frame = ttk.Frame(self.root, padding="10"); main_frame.grid(sticky="nsew"); self.root.columnconfigure(0, weight=1)
         self.setup_data_ui(main_frame)
@@ -88,7 +88,7 @@ class ErrorPlotApp:
         color = self.colors[len(self.model_entries) % len(self.colors)]
         
         entry_vars = {'path': tk.StringVar(), 'legend': tk.StringVar(), 'color': tk.StringVar(value=color), 
-                      'line_style': tk.StringVar(value='solid'), 'line_width': tk.DoubleVar(value=1.8)}
+                      'line_style': tk.StringVar(value='solid'), 'line_width': tk.DoubleVar(value=7)}
 
         ttk.Label(ef, text="Model:").pack(side=tk.LEFT); ttk.Entry(ef, textvariable=entry_vars['path'], width=30).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=5)
         ttk.Button(ef, text="Browse", command=lambda v=entry_vars: self.browse_model(v)).pack(side=tk.LEFT)
@@ -129,8 +129,9 @@ class ErrorPlotApp:
             
             # Shared legend at the top
             handles, labels = axes[0].get_legend_handles_labels()
-            fig.legend(handles, labels, loc='lower center', bbox_to_anchor=(0.5, 1.0), ncol=len(labels), frameon=False, fontsize=self.plot_settings['legend_size'].get())
-            fig.tight_layout(rect=[0, 0.03, 1, 0.99])
+            fig.subplots_adjust(top=0.92, left=0.02, bottom=0.08)
+            fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 0.98),
+                        ncol=len(labels), frameon=False, fontsize=self.plot_settings['legend_size'].get())
             
             chart_path = f"{(self.plot_prefix.get() or 'error')}_all_joints.png"
             plt.savefig(chart_path, dpi=300, bbox_inches='tight')
@@ -180,7 +181,9 @@ class ErrorPlotApp:
             ax.plot(ts, error, label=entry['legend'].get(), color=entry['color'].get(), 
                     linestyle=entry['line_style'].get(), lw=entry['line_width'].get())
 
-        ax.set_ylabel(f"{joint_target.replace('_', ' ').title()} Error (Nm)", fontsize=self.plot_settings['axis_title_size'].get())
+        # Set custom Y-axis label for error plots
+        joint_number = joint_target.replace('joint', '').replace('_torque', '')
+        ax.set_ylabel(f"Joint {joint_number} τ Error (Nm)", fontsize=self.plot_settings['axis_title_size'].get())
         ax.tick_params(axis='both', which='major', labelsize=self.plot_settings['label_size'].get())
         ax.grid(True, which='both', linestyle='--', linewidth=0.5)
         
