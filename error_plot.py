@@ -50,7 +50,7 @@ class ErrorPlotApp:
         self.plot_settings = {'width': tk.DoubleVar(value=32), 'height': tk.DoubleVar(value=18),
                               'x_title': tk.StringVar(value='Timestamp'), 'y_title': tk.StringVar(value='Error τ (Nm)'),
                               'axis_title_size': tk.IntVar(value=50), 'label_size': tk.IntVar(value=50), 
-                              'legend_size': tk.IntVar(value=50)}
+                              'legend_size': tk.IntVar(value=50), 'dpi': tk.IntVar(value=100)}
 
         main_frame = ttk.Frame(self.root, padding="10"); main_frame.grid(sticky="nsew"); self.root.columnconfigure(0, weight=1)
         self.setup_data_ui(main_frame)
@@ -78,7 +78,7 @@ class ErrorPlotApp:
                          ("X-Axis Title:", self.plot_settings['x_title']), ("Y-Axis Title:", self.plot_settings['y_title']), 
                          ("Axis Title Size:", self.plot_settings['axis_title_size']),
                          ("Tick Label Size:", self.plot_settings['label_size']), 
-                         ("Legend Size:", self.plot_settings['legend_size'])]
+                         ("Legend Size:", self.plot_settings['legend_size']), ("DPI:", self.plot_settings['dpi'])]
         for i, (label, var) in enumerate(settings_vars):
             ttk.Label(psf, text=label).grid(row=i, column=0, sticky="w", padx=2, pady=2)
             ttk.Entry(psf, textvariable=var, width=15).grid(row=i, column=1, sticky="ew", padx=2)
@@ -88,7 +88,7 @@ class ErrorPlotApp:
         color = self.colors[len(self.model_entries) % len(self.colors)]
         
         entry_vars = {'path': tk.StringVar(), 'legend': tk.StringVar(), 'color': tk.StringVar(value=color), 
-                      'line_style': tk.StringVar(value='solid'), 'line_width': tk.DoubleVar(value=7)}
+                      'line_style': tk.StringVar(value='solid'), 'line_width': tk.DoubleVar(value=6.5)}
 
         ttk.Label(ef, text="Model:").pack(side=tk.LEFT); ttk.Entry(ef, textvariable=entry_vars['path'], width=30).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=5)
         ttk.Button(ef, text="Browse", command=lambda v=entry_vars: self.browse_model(v)).pack(side=tk.LEFT)
@@ -133,10 +133,15 @@ class ErrorPlotApp:
             fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 0.98),
                         ncol=len(labels), frameon=False, fontsize=self.plot_settings['legend_size'].get())
             
-            chart_path = f"{(self.plot_prefix.get() or 'error')}_all_joints.png"
-            plt.savefig(chart_path, dpi=300, bbox_inches='tight')
+            dpi_value = self.plot_settings['dpi'].get()
+            # Save PNG
+            chart_path_png = f"{(self.plot_prefix.get() or 'error')}_all_joints.png"
+            plt.savefig(chart_path_png, dpi=dpi_value, bbox_inches='tight')
+            # Save SVG
+            chart_path_svg = f"{(self.plot_prefix.get() or 'error')}_all_joints.svg"
+            plt.savefig(chart_path_svg, dpi=dpi_value, bbox_inches='tight', format='svg')
             plt.close(fig)
-            webbrowser.open('file://' + os.path.realpath(chart_path))
+            webbrowser.open('file://' + os.path.realpath(chart_path_png))
 
         except Exception as e:
             messagebox.showerror("Error", f"Plot generation failed: {e}\n{traceback.format_exc()}"); traceback.print_exc()
@@ -183,7 +188,7 @@ class ErrorPlotApp:
 
         # Set custom Y-axis label for error plots
         joint_number = joint_target.replace('joint', '').replace('_torque', '')
-        ax.set_ylabel(f"Joint {joint_number} τ Error (Nm)", fontsize=self.plot_settings['axis_title_size'].get())
+        ax.set_ylabel(f"$\\tau_{{{joint_number}}}$ Error (Nm)", fontsize=self.plot_settings['axis_title_size'].get())
         ax.tick_params(axis='both', which='major', labelsize=self.plot_settings['label_size'].get())
         ax.grid(True, which='both', linestyle='--', linewidth=0.5)
         
