@@ -54,10 +54,10 @@ class ComparisonApp:
         self.joint1_pos = {'x': tk.DoubleVar(value=0.75), 'y': tk.DoubleVar(value=0.35)}
         self.joint2_pos = {'x': tk.DoubleVar(value=0.75), 'y': tk.DoubleVar(value=0.35)}
         self.joint3_pos = {'x': tk.DoubleVar(value=0.75), 'y': tk.DoubleVar(value=0.35)}
-        self.plot_settings = {'width': tk.DoubleVar(value=16), 'height': tk.DoubleVar(value=9),
+        self.plot_settings = {'width': tk.DoubleVar(value=32), 'height': tk.DoubleVar(value=18),
                               'x_title': tk.StringVar(value='Timestamp'), 'y_title': tk.StringVar(value='Torque (Nm)'),
-                              'axis_title_size': tk.IntVar(value=16), 'label_size': tk.IntVar(value=14), 
-                              'legend_size': tk.IntVar(value=10)}
+                              'axis_title_size': tk.IntVar(value=50), 'label_size': tk.IntVar(value=50), 
+                              'legend_size': tk.IntVar(value=50)}
 
         main_frame = ttk.Frame(self.root, padding="10"); main_frame.grid(sticky="nsew"); self.root.columnconfigure(0, weight=1)
         self.setup_data_ui(main_frame)
@@ -121,7 +121,7 @@ class ComparisonApp:
         color = self.colors[len(self.model_entries) % len(self.colors)]
         
         entry_vars = {'path': tk.StringVar(), 'legend': tk.StringVar(), 'color': tk.StringVar(value=color), 
-                      'line_style': tk.StringVar(value='solid'), 'line_width': tk.DoubleVar(value=1.8)}
+                      'line_style': tk.StringVar(value='solid'), 'line_width': tk.DoubleVar(value=7)}
 
         ttk.Label(ef, text="Model:").pack(side=tk.LEFT); ttk.Entry(ef, textvariable=entry_vars['path'], width=30).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=5)
         ttk.Button(ef, text="Browse", command=lambda v=entry_vars: self.browse_model(v)).pack(side=tk.LEFT)
@@ -158,9 +158,12 @@ class ComparisonApp:
                 fig, ax = plt.subplots(figsize=(self.plot_settings['width'].get(), self.plot_settings['height'].get()))
                 self.plot_all_curves(ax, df_gt, all_predictions, joint_target)
                 self.create_circular_magnifier(fig, ax, df_gt, all_predictions, joint_target)
+                # Set custom Y-axis label for individual plots
+                joint_number = joint_target.replace('joint', '').replace('_torque', '')
+                ax.set_ylabel(f"Joint {joint_number} Torque (Nm)", fontsize=self.plot_settings['axis_title_size'].get())
                 plt.tight_layout(pad=1.0)
                 chart_path = f"{(self.plot_prefix.get() or 'comparison')}_{joint_target}.png"
-                plt.savefig(chart_path, dpi=300, bbox_inches='tight')
+                plt.savefig(chart_path, dpi=100, bbox_inches='tight')
                 plt.close(fig)
                 webbrowser.open('file://' + os.path.realpath(chart_path))
 
@@ -173,15 +176,18 @@ class ComparisonApp:
                 joint_target = targets[i]
                 self.plot_all_curves(ax, df_gt, all_predictions, joint_target, draw_legend=False)
                 self.create_circular_magnifier(fig_combined, ax, df_gt, all_predictions, joint_target)
-                ax.set_ylabel(f"{joint_target.replace('_', ' ').title()} (Nm)", fontsize=self.plot_settings['axis_title_size'].get())
+                # Set custom Y-axis label for combined plot
+                joint_number = joint_target.replace('joint', '').replace('_torque', '')
+                ax.set_ylabel(f"Joint {joint_number} Torque (Nm)", fontsize=self.plot_settings['axis_title_size'].get())
                 if i < n_joints - 1: ax.set_xlabel('')
             
             handles, labels = axes_combined[0].get_legend_handles_labels()
-            fig_combined.legend(handles, labels, loc='lower center', bbox_to_anchor=(0.5, 1.0), ncol=len(labels), frameon=False, fontsize=self.plot_settings['legend_size'].get())
-            fig_combined.tight_layout(rect=[0, 0.03, 1, 0.99])
+            fig_combined.subplots_adjust(top=0.92)
+            fig_combined.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 0.98),
+                                ncol=len(labels), frameon=False, fontsize=self.plot_settings['legend_size'].get())
             
             combined_path = f"{(self.plot_prefix.get() or 'comparison')}_all_joints.png"
-            plt.savefig(combined_path, dpi=1000, bbox_inches='tight')
+            plt.savefig(combined_path, dpi=100, bbox_inches='tight')
             plt.close(fig_combined)
             webbrowser.open('file://' + os.path.realpath(combined_path))
 
