@@ -361,12 +361,12 @@ class FabricatedPlotApp:
                 
                 # Set custom Y-axis label for combined plot
                 joint_number = joint_target.replace('joint', '').replace('_torque', '')
-                ax.set_ylabel(f"$\\tau_{{{joint_number}}}$ (Nm)", fontsize=self.plot_settings['axis_title_size'].get(), labelpad=30)
+                ax.set_ylabel(f"$\\tau_{{{joint_number}}}$ (Nm)", fontsize=self.plot_settings['axis_title_size'].get(), labelpad=15)
                 if i < n_joints - 1: 
                     ax.set_xlabel('')
             
             handles, labels = axes_combined[0].get_legend_handles_labels()
-            fig_combined.subplots_adjust(top=0.92, left=0.02, bottom=0.08)
+            fig_combined.subplots_adjust(top=0.92, left=0.20, bottom=0.08, right=0.95)
             fig_combined.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 0.98),
                                 ncol=len(labels), frameon=False, fontsize=self.plot_settings['legend_size'].get())
             
@@ -400,7 +400,7 @@ class FabricatedPlotApp:
             
             # Shared legend at the top
             handles, labels = axes[0].get_legend_handles_labels()
-            fig.subplots_adjust(top=0.92, left=0.02, bottom=0.08)
+            fig.subplots_adjust(top=0.92, left=0.20, bottom=0.08, right=0.95)
             fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 0.98),
                         ncol=len(labels), frameon=False, fontsize=self.plot_settings['legend_size'].get())
             
@@ -422,7 +422,7 @@ class FabricatedPlotApp:
         ax.plot(df_gt.index, df_gt[joint_target], label='GROUND TRUTH', 
                 color=self.ground_truth_settings['color'].get(), 
                 linestyle=self.ground_truth_settings['line_style'].get(), 
-                lw=self.ground_truth_settings['line_width'].get(), zorder=10)
+                lw=self.ground_truth_settings['line_width'].get(), zorder=1)
         
         for pred_data in all_predictions:
             entry, preds, seq_len, model_type = pred_data['entry'], pred_data['preds'], pred_data['seq_len'], pred_data['model_type']
@@ -436,10 +436,10 @@ class FabricatedPlotApp:
             
             ax.plot(ts, preds[f"predicted_{joint_target}"].values, 
                     label=entry['legend'].get(), color=entry['color'].get(), 
-                    linestyle=entry['line_style'].get(), lw=entry['line_width'].get())
+                    linestyle=entry['line_style'].get(), lw=entry['line_width'].get(), zorder=2)
 
         ax.set_xlabel(self.plot_settings['x_title'].get(), fontsize=self.plot_settings['axis_title_size'].get())
-        ax.set_ylabel(self.plot_settings['y_title'].get(), fontsize=self.plot_settings['axis_title_size'].get(), labelpad=30)
+        ax.set_ylabel(self.plot_settings['y_title'].get(), fontsize=self.plot_settings['axis_title_size'].get(), labelpad=15)
         ax.tick_params(axis='both', which='major', labelsize=self.plot_settings['label_size'].get())
         if draw_legend:
             ax.legend(loc='lower center', bbox_to_anchor=(0.5, 1.01), ncol=len(all_predictions) + 1,
@@ -467,11 +467,11 @@ class FabricatedPlotApp:
             error = gt_aligned - pred_values
             
             ax.plot(ts, error, label=entry['legend'].get(), color=entry['color'].get(), 
-                    linestyle=entry['line_style'].get(), lw=entry['line_width'].get())
+                    linestyle=entry['line_style'].get(), lw=entry['line_width'].get(), zorder=2)
 
         # Set custom Y-axis label for error plots
         joint_number = joint_target.replace('joint', '').replace('_torque', '')
-        ax.set_ylabel(f"$\\tau_{{{joint_number}}}$ Error (Nm)", fontsize=self.plot_settings['axis_title_size'].get(), labelpad=30)
+        ax.set_ylabel(f"$\\tau_{{{joint_number}}}$ Error (Nm)", fontsize=self.plot_settings['axis_title_size'].get(), labelpad=15)
         ax.tick_params(axis='both', which='major', labelsize=self.plot_settings['label_size'].get())
         ax.grid(True, which='both', linestyle='--', linewidth=0.5)
         
