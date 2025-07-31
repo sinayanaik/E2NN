@@ -46,6 +46,8 @@ class ComparisonApp:
         self.root = root; self.root.title("Model Comparison Tool")
         
         self.ground_truth_path, self.model_entries, self.plot_prefix = tk.StringVar(), [], tk.StringVar(value="comparison")
+        # Ground truth line settings
+        self.ground_truth_settings = {'color': tk.StringVar(value='black'), 'line_style': tk.StringVar(value='solid'), 'line_width': tk.DoubleVar(value=2.5)}
         
         # --- Settings with default values ---
         self.zoom_center_x, self.zoom_x_range = tk.DoubleVar(value=650), tk.DoubleVar(value=25)
@@ -67,10 +69,29 @@ class ComparisonApp:
 
     def setup_data_ui(self, p):
         gt_frame = ttk.LabelFrame(p, text="Ground Truth Data", padding="10"); gt_frame.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
-        ttk.Label(gt_frame, text="CSV Path:").pack(side=tk.LEFT)
-        ttk.Entry(gt_frame, textvariable=self.ground_truth_path).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=5)
-        browse_btn = ttk.Button(gt_frame, text="Browse", command=lambda: self.ground_truth_path.set(filedialog.askopenfilename(title="Select Ground Truth CSV", filetypes=[("CSV files", "*.csv")])))
+        
+        # CSV path row
+        path_frame = ttk.Frame(gt_frame); path_frame.pack(fill=tk.X, pady=2)
+        ttk.Label(path_frame, text="CSV Path:").pack(side=tk.LEFT)
+        ttk.Entry(path_frame, textvariable=self.ground_truth_path).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=5)
+        browse_btn = ttk.Button(path_frame, text="Browse", command=lambda: self.ground_truth_path.set(filedialog.askopenfilename(title="Select Ground Truth CSV", filetypes=[("CSV files", "*.csv")])))
         browse_btn.pack(side=tk.LEFT)
+        
+        # Ground truth line settings row
+        gt_settings_frame = ttk.Frame(gt_frame); gt_settings_frame.pack(fill=tk.X, pady=2)
+        ttk.Label(gt_settings_frame, text="Color:").pack(side=tk.LEFT)
+        
+        gt_color_label = ttk.Label(gt_settings_frame, text="      ", background='black', relief="solid")
+        gt_color_label.pack(side=tk.LEFT, padx=(5, 2), ipady=2)
+        ttk.Button(gt_settings_frame, text="Color", command=lambda: self.choose_ground_truth_color(gt_color_label)).pack(side=tk.LEFT)
+        
+        ttk.Label(gt_settings_frame, text="Style:").pack(side=tk.LEFT, padx=(10, 2))
+        gt_style_dd = ttk.Combobox(gt_settings_frame, textvariable=self.ground_truth_settings['line_style'], 
+                                   values=['solid', 'dashed', 'dotted', 'dashdot'], width=7, state="readonly")
+        gt_style_dd.pack(side=tk.LEFT, padx=2); gt_style_dd.set('solid')
+        
+        ttk.Label(gt_settings_frame, text="Width:").pack(side=tk.LEFT, padx=(10, 2))
+        ttk.Entry(gt_settings_frame, textvariable=self.ground_truth_settings['line_width'], width=4).pack(side=tk.LEFT)
         
         self.models_frame = ttk.LabelFrame(p, text="Models to Compare", padding="10"); self.models_frame.grid(row=1, column=0, sticky="ew", padx=5, pady=5)
         ttk.Button(self.models_frame, text="Add Model", command=self.add_model_entry).pack()
@@ -139,6 +160,12 @@ class ComparisonApp:
     def choose_color(self, color_var, color_label):
         chosen_color = colorchooser.askcolor(color=color_var.get())[1]
         if chosen_color: color_var.set(chosen_color); color_label.config(background=chosen_color)
+    
+    def choose_ground_truth_color(self, color_label):
+        chosen_color = colorchooser.askcolor(color=self.ground_truth_settings['color'].get())[1]
+        if chosen_color: 
+            self.ground_truth_settings['color'].set(chosen_color)
+            color_label.config(background=chosen_color)
 
     def browse_model(self, entry_vars):
         path = filedialog.askopenfilename(title="Select Model File", filetypes=[("PyTorch models", "*.pth")])
@@ -230,7 +257,10 @@ class ComparisonApp:
         return predictions
 
     def plot_all_curves(self, ax, df_gt, all_predictions, joint_target, draw_legend=True):
-        ax.plot(df_gt.index, df_gt[joint_target], label='GROUND TRUTH', color='black', lw=2.5, zorder=10)
+        ax.plot(df_gt.index, df_gt[joint_target], label='GROUND TRUTH', 
+                color=self.ground_truth_settings['color'].get(), 
+                linestyle=self.ground_truth_settings['line_style'].get(), 
+                lw=self.ground_truth_settings['line_width'].get(), zorder=10)
         for pred_data in all_predictions:
             entry, preds, seq_len = pred_data['entry'], pred_data['preds'], pred_data['seq_len']
             ts = df_gt.index[seq_len:] if seq_len > 0 else df_gt.index
@@ -264,7 +294,7 @@ class ComparisonApp:
         axins = ax.inset_axes([cx - radius, cy - radius, 2 * radius, 2 * radius], transform=ax.transAxes, zorder=12)
         
         # Plot data in inset
-        for pred_data in all_predictions + [{'entry': {'color': tk.StringVar(value='black'), 'line_style': tk.StringVar(value='solid'), 'line_width': tk.DoubleVar(value=2.5)}, 'preds': df_gt.rename(columns={joint_target: f"predicted_{joint_target}"}), 'seq_len': 0}]:
+        for pred_data in all_predictions + [{'entry': {'color': self.ground_truth_settings['color'], 'line_style': self.ground_truth_settings['line_style'], 'line_width': self.ground_truth_settings['line_width']}, 'preds': df_gt.rename(columns={joint_target: f"predicted_{joint_target}"}), 'seq_len': 0}]:
             entry, preds, seq_len = pred_data['entry'], pred_data['preds'], pred_data['seq_len']
             ts = df_gt.index[seq_len:] if seq_len > 0 else df_gt.index
             axins.plot(ts, preds[f"predicted_{joint_target}"].values, color=entry['color'].get(), linestyle=entry['line_style'].get(), lw=entry['line_width'].get())
